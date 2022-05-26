@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Central Chat</string>
+    <string name="welcome">Welcome</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="login">Login</string>
+    <string name="register_btn">Register</string>
+    <string name="logo">logo</string>
+    <string name="hint_password">password</string>
+    <string name="phone_number">phone number</string>
+    <string name="hint_email">email</string>
+    <string name="hint_username">username</string>
+    <string name="central_motto">Faith, Integrity and Excellence</string>
+    <string name="index_num">CSC18010883</string>
+</resources>
