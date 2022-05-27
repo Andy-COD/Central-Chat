@@ -58,6 +58,7 @@ public class Login extends AppCompatActivity {
                             if(Objects.equals(getPassword, txtPassword)) {
                                 Toast.makeText(Login.this, "Successfully logged in", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(getApplicationContext(), HomePage.class));
+                                finish();
                             }else {
                                 Toast.makeText(Login.this, "Wrong password", Toast.LENGTH_SHORT).show();
                             }
