@@ -31,9 +31,9 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/username"
+            android:id="@+id/index_num"
             android:layout_marginTop="15dp"
-            android:hint="@string/hint_username"
+            android:hint="@string/index_num"
             android:textSize="20sp"
             android:inputType="textEmailAddress"
             />

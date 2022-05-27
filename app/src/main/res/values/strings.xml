@@ -11,4 +11,7 @@
     <string name="hint_username">username</string>
     <string name="central_motto">Faith, Integrity and Excellence</string>
     <string name="index_num">CSC18010883</string>
+    <string name="icon_home">Home</string>
+    <string name="profile_icon">profile</string>
+    <string name="settings_icon">settings</string>
 </resources>

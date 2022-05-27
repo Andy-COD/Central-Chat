@@ -20,12 +20,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 public class SignUp extends AppCompatActivity {
 
     //Declare variable
     EditText userName, phoneNum, password, email, indexNum;
     Button signUp;
+    String emailRegexPattern;
+    String indexRegexPattern;
+    String indexRegexPatternSlashes;
 
     //Firebase
     FirebaseAuth auth;
@@ -49,6 +53,9 @@ public class SignUp extends AppCompatActivity {
         email = findViewById(R.id.email);
         signUp = findViewById(R.id.btn_register);
         indexNum = findViewById(R.id.index_num);
+        emailRegexPattern = "^(.+)@(\\S+)$";
+        indexRegexPattern = "[a-zA-Z]+[0-9]+";
+        indexRegexPatternSlashes = "[a-zA-Z]+/[0-9]+/[0-9]+/[0-9]+";
 
 
         dbReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://central-chat-5d62e-default-rtdb.firebaseio.com/");
@@ -65,7 +72,14 @@ public class SignUp extends AppCompatActivity {
                 Toast.makeText(SignUp.this, "All fields are required", Toast.LENGTH_SHORT).show();
             }else if (txtPassword.length() < 6) {
                 Toast.makeText(SignUp.this, "Password must be 6 characters or more", Toast.LENGTH_SHORT).show();
-            }else {
+            }else if(!emailPatternMatcher(txtEmail, emailRegexPattern)) {
+                Toast.makeText(this, "Invalid email address", Toast.LENGTH_SHORT).show();
+            }else if (!indexPatternMatcher(txtIndexNumber, indexRegexPattern) || indexPatternMatcher(txtIndexNumber, indexRegexPatternSlashes)) {
+                Toast.makeText(this, "Invalid index number", Toast.LENGTH_SHORT).show();
+            }else if (txtPhoneNum.length() != 10) {
+                Toast.makeText(this, "Invalid phone number", Toast.LENGTH_SHORT).show();
+            }
+            else {
                 register(txtEmail, txtPassword, txtPhoneNum, txtUsername, txtIndexNumber);
             }
         });
@@ -103,5 +117,14 @@ public class SignUp extends AppCompatActivity {
                     }
                 });
     }
-
+    public boolean emailPatternMatcher(String txtEmail, String txtRegex) {
+        return Pattern.compile(txtRegex)
+                .matcher(txtEmail)
+                .matches();
+    }
+    public Boolean indexPatternMatcher(String txtIndex, String txtRegex) {
+        return Pattern.compile(txtRegex)
+                .matcher(txtIndex)
+                .matches();
+    }
 }
