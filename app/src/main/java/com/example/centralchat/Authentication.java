@@ -11,11 +11,14 @@ import android.widget.VideoView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+
 public class Authentication extends AppCompatActivity {
 
     VideoView videoView;
     Button loginBtn, registerBtn;
+
     FirebaseUser firebaseUser;
+
 
     @Override
     protected void onStart() {

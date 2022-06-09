@@ -4,9 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -27,13 +29,17 @@ public class SignUp extends AppCompatActivity {
     //Declare variable
     EditText userName, phoneNum, password, email, indexNum;
     Button signUp;
+
+    //regex patterns to verify text format
     String emailRegexPattern;
     String indexRegexPattern;
     String indexRegexPatternSlashes;
 
-    //Firebase
+    //Firebase initialization
     FirebaseAuth auth;
     DatabaseReference dbReference;
+
+    ProgressDialog progressDialog;
 
 
     @Override
@@ -61,6 +67,15 @@ public class SignUp extends AppCompatActivity {
         dbReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://central-chat-5d62e-default-rtdb.firebaseio.com/");
         auth = FirebaseAuth.getInstance();
 
+        //Check if user already signed in
+        if(!MemoryData.getIndexNum(this).isEmpty()) {
+            Intent intent = new Intent(SignUp.this, HomePage.class);
+            intent.putExtra("phone number", MemoryData.getIndexNum(this));
+            intent.putExtra("user name", MemoryData.getUserName(this));
+            startActivity(intent);
+            finish();
+        }
+
         signUp.setOnClickListener(v -> {
             String txtUsername = Objects.requireNonNull(userName.getText()).toString();
             String txtPhoneNum = Objects.requireNonNull(phoneNum.getText()).toString();
@@ -86,8 +101,15 @@ public class SignUp extends AppCompatActivity {
     }
 
     private void register(String txtEmail, String txtPassword, String txtPhoneNum, String txtUsername, String txtIndexNum) {
+
+        progressDialog = new ProgressDialog(SignUp.this);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         auth.createUserWithEmailAndPassword(txtEmail, txtPassword)
                 .addOnCompleteListener(task -> {
+                    progressDialog.dismiss();
                     if (task.isSuccessful()) {
                         dbReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -102,8 +124,18 @@ public class SignUp extends AppCompatActivity {
                                     dbReference.child("users").child(txtIndexNum).child("index number").setValue(txtIndexNum);
                                     dbReference.child("users").child(txtIndexNum).child("email").setValue(txtEmail);
 
+                                    //Save index number to memory
+                                    MemoryData.saveIndexNum(txtIndexNum, SignUp.this);
+
+                                    //save name to memory
+                                    MemoryData.saveUserName(txtUsername, SignUp.this);
+
                                     Toast.makeText(SignUp.this, "USer registered successfully", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(getApplicationContext(), HomePage.class);
+                                    Intent intent = new Intent(SignUp.this, HomePage.class);
+                                    Bundle bundle;
+                                    bundle = intent.getExtras();
+                                    bundle.putString("index number", txtIndexNum);
+                                    bundle.putString("username", txtUsername);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -111,7 +143,7 @@ public class SignUp extends AppCompatActivity {
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                                progressDialog.dismiss();
                             }
                         });
                     }

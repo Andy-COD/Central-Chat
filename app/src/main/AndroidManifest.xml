@@ -13,7 +13,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/chatlogo"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CentralChat"
+        android:theme="@style/DemoTheme"
         tools:targetApi="31">
         <activity
             android:name=".SignUp"
