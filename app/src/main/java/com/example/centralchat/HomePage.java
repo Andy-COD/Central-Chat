@@ -3,6 +3,7 @@ package com.example.centralchat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -20,16 +21,15 @@ public class HomePage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
-
-        String indexNum = MemoryData.getIndexNum(getApplicationContext());
-        String userName = MemoryData.getUserName(getApplicationContext());
         
         Bundle bundle = new Bundle();
-        bundle.putString("index number", indexNum);
-        bundle.putString("username", userName);
+        bundle.putString("index number", MemoryData.getIndexNum(HomePage.this));
+        bundle.putString("username", MemoryData.getUserName(HomePage.this));
+
 
         tabLayout = findViewById(R.id.tab_layout);
         viewPager2 = findViewById(R.id.view_pager);
+        //create new adapter and set the bundle as an argument
         viewPagerAdapter = new ViewPagerAdapter(this, bundle);
         viewPager2.setAdapter(viewPagerAdapter);
 

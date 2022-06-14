@@ -28,10 +28,38 @@ public class MemoryData {
         }
     }
 
+    public static void savePassword(String data, Context context) {
+        try {
+            FileOutputStream fileOutputStream = context.openFileOutput("pswd.txt", Context.MODE_PRIVATE);
+            fileOutputStream.write(data.getBytes());
+            fileOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static String getIndexNum(Context context) {
         String data = "";
         try {
             FileInputStream fileInputStream = context.openFileInput("data.txt");
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+            data = stringBuilder.toString();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+    public static String getPassWord(Context context) {
+        String data = "";
+        try {
+            FileInputStream fileInputStream = context.openFileInput("pswd.txt");
             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             StringBuilder stringBuilder = new StringBuilder();

@@ -21,4 +21,10 @@
     <string name="messages">Messages</string>
     <string name="place_holder_text">This is last message</string>
     <string name="unseen_placeholder">1</string>
+    <string name="news_header">Campus News</string>
+    <string name="news">News</string>
+    <string name="news_img">news_image</string>
+    <string name="news_content">News Content</string>
+    <string name="news_date">date</string>
+    <string name="search_icon">search_icon</string>
 </resources>

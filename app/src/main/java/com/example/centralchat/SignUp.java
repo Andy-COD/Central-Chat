@@ -70,8 +70,8 @@ public class SignUp extends AppCompatActivity {
         //Check if user already signed in
         if(!MemoryData.getIndexNum(this).isEmpty()) {
             Intent intent = new Intent(SignUp.this, HomePage.class);
-            intent.putExtra("phone number", MemoryData.getIndexNum(this));
-            intent.putExtra("user name", MemoryData.getUserName(this));
+            intent.putExtra("index number", MemoryData.getIndexNum(this));
+            intent.putExtra("username", MemoryData.getUserName(this));
             startActivity(intent);
             finish();
         }
@@ -123,6 +123,7 @@ public class SignUp extends AppCompatActivity {
                                     dbReference.child("users").child(txtIndexNum).child("username").setValue(txtUsername);
                                     dbReference.child("users").child(txtIndexNum).child("index number").setValue(txtIndexNum);
                                     dbReference.child("users").child(txtIndexNum).child("email").setValue(txtEmail);
+                                    dbReference.child("users").child(txtIndexNum).child("profile picture").setValue("");
 
                                     //Save index number to memory
                                     MemoryData.saveIndexNum(txtIndexNum, SignUp.this);
@@ -130,12 +131,13 @@ public class SignUp extends AppCompatActivity {
                                     //save name to memory
                                     MemoryData.saveUserName(txtUsername, SignUp.this);
 
+                                    //Save password to memory
+                                    MemoryData.savePassword(txtPassword, SignUp.this);
+
                                     Toast.makeText(SignUp.this, "USer registered successfully", Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(SignUp.this, HomePage.class);
-                                    Bundle bundle;
-                                    bundle = intent.getExtras();
-                                    bundle.putString("index number", txtIndexNum);
-                                    bundle.putString("username", txtUsername);
+                                    intent.putExtra("index number", MemoryData.getIndexNum(SignUp.this));
+                                    intent.putExtra("username", MemoryData.getUserName(SignUp.this));
                                     startActivity(intent);
                                     finish();
                                 }

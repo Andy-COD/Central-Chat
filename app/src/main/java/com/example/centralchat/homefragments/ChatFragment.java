@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.example.centralchat.R;
+import com.example.centralchat.messages.MessagesAdapter;
+import com.example.centralchat.messages.MessagesList;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -22,11 +24,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatFragment extends Fragment {
+    private final List<MessagesList> messagesLists = new ArrayList<>();
     String indexNum, userName;
     RecyclerView messagesRecyclerView;
     CircleImageView userProfile;
@@ -49,9 +54,6 @@ public class ChatFragment extends Fragment {
             userName = getArguments().getString("username");
         }
 
-
-        Log.d("Message tag", indexNum);
-
         dbReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://central-chat-5d62e-default-rtdb.firebaseio.com/");
         mAuth = FirebaseAuth.getInstance();
         fireBaseUser = mAuth.getCurrentUser();
@@ -70,7 +72,6 @@ public class ChatFragment extends Fragment {
         dbReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.d("Message tag", snapshot.child(indexNum).toString());
                 String profileImgUrl = snapshot.child(indexNum).child("profile picture").getValue(String.class);
                 if(Objects.requireNonNull(profileImgUrl).isEmpty()) {
                     Picasso.get().load(profileImgUrl).into(userProfile);
@@ -83,6 +84,33 @@ public class ChatFragment extends Fragment {
                 progressDialog.dismiss();
             }
         });
+        dbReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                messagesLists.clear();
+
+                for(DataSnapshot dataSnapshot : snapshot.child("users").getChildren()) {
+                    final String userIndex = dataSnapshot.getKey();
+                    if(!Objects.equals(userIndex, indexNum)) {
+                        final String getUserName = dataSnapshot.child("username").getValue(String.class);
+                        final String getProfilePicture = dataSnapshot.child("profile picture").getValue(String.class);
+
+                        Log.d("Message tag", getUserName);
+
+                        MessagesList messagesList = new MessagesList(getUserName, "", getProfilePicture, 0);
+                        messagesLists.add(messagesList);
+                    }
+                }
+                messagesRecyclerView.setAdapter(new MessagesAdapter(messagesLists, getActivity()));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
         // Inflate the layout for this fragment
         return view;
     }

@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,8 +44,10 @@ public class Login extends AppCompatActivity {
         dbReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://central-chat-5d62e-default-rtdb.firebaseio.com/");
 
         login.setOnClickListener(v -> {
-            String txtIndex = Objects.requireNonNull(indexNum.toString());
-            String txtPassword = Objects.requireNonNull(password.toString());
+            String txtIndex = indexNum.getText().toString();
+            String txtPassword = password.getText().toString();
+
+            Log.d("Message tag", txtIndex);
 
             if(TextUtils.isEmpty(txtIndex) || TextUtils.isEmpty(txtPassword)) {
                 Toast.makeText(Login.this, "Please enter your index number / password", Toast.LENGTH_SHORT).show();
@@ -54,7 +57,7 @@ public class Login extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         //check if index number exist
                         if(snapshot.hasChild(txtIndex)) {
-                            String getPassword = snapshot.child(txtIndex).child("password").getValue(String.class);
+                            String getPassword = snapshot.child("password").getValue(String.class);
                             if(Objects.equals(getPassword, txtPassword)) {
                                 Toast.makeText(Login.this, "Successfully logged in", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(getApplicationContext(), HomePage.class));

@@ -17,18 +17,15 @@ public class Authentication extends AppCompatActivity {
     VideoView videoView;
     Button loginBtn, registerBtn;
 
-    FirebaseUser firebaseUser;
-
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        //Check if user exist already
-        if(firebaseUser != null) {
+        if(!MemoryData.getIndexNum(this).isEmpty()) {
             Intent intent = new Intent(Authentication.this, HomePage.class);
+            intent.putExtra("index number", MemoryData.getIndexNum(this));
+            intent.putExtra("username", MemoryData.getUserName(this));
             startActivity(intent);
             finish();
         }

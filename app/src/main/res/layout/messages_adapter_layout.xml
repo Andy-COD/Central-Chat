@@ -49,7 +49,7 @@
                     android:maxLines="1"
                     android:textSize="14sp"
                     android:layout_marginTop="5dp"
-                    android:textColor="@color/blue_800"
+                    android:textColor="@color/light_black"
                     android:text="@string/place_holder_text"
                     android:id="@+id/last_message"/>
 

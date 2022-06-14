@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.centralchat.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -34,7 +35,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull MessagesAdapter.ViewHolder holder, int position) {
+        MessagesList list2 = messagesList.get(position);
 
+        if(!list2.getProfilePicture().isEmpty()) {
+            Picasso.get().load(list2.getProfilePicture()).resize(100, 100).centerCrop().into(holder.profilePicture);
+        }
+        holder.userName.setText(list2.getUsername());
+        holder.lastMessage.setText(list2.getLastMessage());
+
+        if(list2.getUnseenMessages() == 0) {
+            holder.unseenMessages.setVisibility(View.GONE);
+        }else {
+            holder.unseenMessages.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -44,10 +57,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private CircleImageView profilePicture;
-        private TextView userName;
-        private TextView lastMessage;
-        private TextView unseenMessages;
+        private final CircleImageView profilePicture;
+        private final TextView userName;
+        private final TextView lastMessage;
+        private final TextView unseenMessages;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

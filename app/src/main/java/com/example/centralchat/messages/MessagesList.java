@@ -1,12 +1,11 @@
 package com.example.centralchat.messages;
 
 public class MessagesList {
-    private String username, phoneNum, lastMessage, profilePicture;
+    private String username, lastMessage, profilePicture;
     private int unseenMessages;
 
-    public MessagesList(String username, String phoneNum, String lastMessage, String profilePicture, int unseenMessages) {
+    public MessagesList(String username, String lastMessage, String profilePicture, int unseenMessages) {
         this.username = username;
-        this.phoneNum = phoneNum;
         this.lastMessage = lastMessage;
         this.profilePicture = profilePicture;
         this.unseenMessages = unseenMessages;
@@ -14,10 +13,6 @@ public class MessagesList {
 
     public String getUsername() {
         return username;
-    }
-
-    public String getPhoneNum() {
-        return phoneNum;
     }
 
     public String getLastMessage() {
