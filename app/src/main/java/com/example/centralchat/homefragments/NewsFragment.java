@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.example.centralchat.R;
 import com.example.centralchat.news.NewsAdapter;
 import com.example.centralchat.news.NewsList;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,6 +39,8 @@ public class NewsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
          view  = inflater.inflate(R.layout.fragment_news, container, false);
+
+         Fresco.initialize(requireActivity().getApplicationContext());
 
          newsImage = view.findViewById(R.id.news_image);
          content = view.findViewById(R.id.news_content);

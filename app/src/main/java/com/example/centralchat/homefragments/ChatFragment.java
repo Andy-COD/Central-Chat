@@ -8,10 +8,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.bumptech.glide.Glide;
+import com.example.centralchat.MemoryData;
 import com.example.centralchat.R;
 import com.example.centralchat.messages.MessagesAdapter;
 import com.example.centralchat.messages.MessagesList;
@@ -41,6 +43,13 @@ public class ChatFragment extends Fragment {
     FirebaseAuth mAuth;
     FirebaseUser fireBaseUser;
 
+    private int unseenMessages = 0;
+    private String lastMessage = "";
+    private String chatKey = "";
+
+    private boolean dataSet = false;
+    private MessagesAdapter messagesAdapter;
+
     View view;
 
     @Override
@@ -63,6 +72,11 @@ public class ChatFragment extends Fragment {
         messagesRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity().getApplicationContext()));
         messagesRecyclerView.setHasFixedSize(true);
 
+        //set messages adapter to recycler view
+        messagesAdapter = new MessagesAdapter(messagesLists, getActivity());
+
+        messagesRecyclerView.setAdapter(messagesAdapter);
+
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage("Loading...");
         progressDialog.setCancelable(false);
@@ -74,7 +88,8 @@ public class ChatFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String profileImgUrl = snapshot.child(indexNum).child("profile picture").getValue(String.class);
                 if(Objects.requireNonNull(profileImgUrl).isEmpty()) {
-                    Picasso.get().load(profileImgUrl).into(userProfile);
+                    Glide.with(getContext()).load("https://cdn-icons.flaticon.com/png/512/3177/premium/3177440.png?token=exp=1655298696~hmac=e5d2778f3a651d22e611ccfa87527f31").into(userProfile);
+                    Picasso.get().load(profileImgUrl).placeholder(R.drawable.ic_profile).into(userProfile);
                 }
                 progressDialog.dismiss();
             }
@@ -89,20 +104,69 @@ public class ChatFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                 messagesLists.clear();
+                unseenMessages = 0;
+                lastMessage = "";
+                chatKey = "";
 
                 for(DataSnapshot dataSnapshot : snapshot.child("users").getChildren()) {
                     final String userIndex = dataSnapshot.getKey();
+
+                    dataSet = false;
+
                     if(!Objects.equals(userIndex, indexNum)) {
                         final String getUserName = dataSnapshot.child("username").getValue(String.class);
                         final String getProfilePicture = dataSnapshot.child("profile picture").getValue(String.class);
 
-                        Log.d("Message tag", getUserName);
 
-                        MessagesList messagesList = new MessagesList(getUserName, "", getProfilePicture, 0);
-                        messagesLists.add(messagesList);
+                        dbReference.child("chat").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                int getChatCount = (int)snapshot.getChildrenCount();
+
+                                if(getChatCount > 0) {
+                                    for (DataSnapshot dataSnapshot1: snapshot.getChildren()) {
+                                        final String getKey = dataSnapshot1.getKey();
+                                        chatKey = getKey;
+
+                                        if (dataSnapshot1.hasChild("user_1") && dataSnapshot1.hasChild("user_2") && dataSnapshot1.hasChild("messages")) {
+                                            final String getInitialUser = dataSnapshot1.child("user_1").getValue(String.class);
+                                            final String getSecondUser = dataSnapshot1.child("user_2").getValue(String.class);
+
+                                            if(Objects.equals(getInitialUser, getUserName) && Objects.equals(getSecondUser, indexNum)
+                                                    || (Objects.equals(getInitialUser, indexNum) && Objects.equals(getSecondUser, getUserName))
+                                            ) {
+                                                for(DataSnapshot chatDataSnapShot: dataSnapshot1.child("messages").getChildren()) {
+                                                    final long getMessageKey = Long.parseLong(Objects.requireNonNull(chatDataSnapShot.getKey()));
+                                                    final long getLastSentMessage = Long.parseLong(MemoryData.getLastMsgTS(requireActivity().getApplicationContext(), getKey));
+
+                                                    lastMessage = chatDataSnapShot.child("msg").getValue(String.class);
+                                                    if(getMessageKey > getLastSentMessage) {
+                                                        unseenMessages++;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+
+                        if(!dataSet) {
+                            dataSet = true;
+                            MessagesList messagesList = new MessagesList(getUserName, lastMessage, getProfilePicture, unseenMessages, chatKey);
+                            messagesLists.add(messagesList);
+                            messagesAdapter.updateData(messagesLists);
+                        }
+
                     }
                 }
-                messagesRecyclerView.setAdapter(new MessagesAdapter(messagesLists, getActivity()));
+
             }
 
             @Override

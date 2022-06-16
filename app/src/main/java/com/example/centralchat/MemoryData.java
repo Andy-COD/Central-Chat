@@ -18,6 +18,16 @@ public class MemoryData {
             e.printStackTrace();
         }
     }
+
+    public static void saveLastMsgTS(String data, String chatId, Context context) {
+        try {
+            FileOutputStream fileOutputStream = context.openFileOutput(chatId+"txt", Context.MODE_PRIVATE);
+            fileOutputStream.write(data.getBytes());
+            fileOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public static void saveUserName(String data, Context context) {
         try {
             FileOutputStream fileOutputStream = context.openFileOutput("name.txt", Context.MODE_PRIVATE);
@@ -42,6 +52,24 @@ public class MemoryData {
         String data = "";
         try {
             FileInputStream fileInputStream = context.openFileInput("data.txt");
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+            data = stringBuilder.toString();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
+    public static String getLastMsgTS(Context context, String chatId) {
+        String data = "0";
+        try {
+            FileInputStream fileInputStream = context.openFileInput(chatId+"txt");
             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             StringBuilder stringBuilder = new StringBuilder();

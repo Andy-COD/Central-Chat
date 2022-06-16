@@ -9,7 +9,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.example.centralchat.homefragments.ChatFragment;
 import com.example.centralchat.homefragments.NewsFragment;
-import com.example.centralchat.homefragments.UsersFragment;
+import com.example.centralchat.homefragments.ProfileFragment;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
 
@@ -27,7 +27,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
 
         switch(position) {
             case 2:
-                return new UsersFragment();
+                return new ProfileFragment();
             case 0:
                 return new NewsFragment();
             case 1:

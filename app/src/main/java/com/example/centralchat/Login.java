@@ -57,7 +57,7 @@ public class Login extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         //check if index number exist
                         if(snapshot.hasChild(txtIndex)) {
-                            String getPassword = snapshot.child("password").getValue(String.class);
+                            String getPassword = snapshot.child(txtIndex).child("password").getValue(String.class);
                             if(Objects.equals(getPassword, txtPassword)) {
                                 Toast.makeText(Login.this, "Successfully logged in", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(getApplicationContext(), HomePage.class));

@@ -8,7 +8,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -123,7 +122,8 @@ public class SignUp extends AppCompatActivity {
                                     dbReference.child("users").child(txtIndexNum).child("username").setValue(txtUsername);
                                     dbReference.child("users").child(txtIndexNum).child("index number").setValue(txtIndexNum);
                                     dbReference.child("users").child(txtIndexNum).child("email").setValue(txtEmail);
-                                    dbReference.child("users").child(txtIndexNum).child("profile picture").setValue("");
+                                    //set default profile picture
+                                    dbReference.child("users").child(txtIndexNum).child("profile picture").setValue("https://cdn-icons.flaticon.com/png/512/3177/premium/3177440.png?token=exp=1655298696~hmac=e5d2778f3a651d22e611ccfa87527f31");
 
                                     //Save index number to memory
                                     MemoryData.saveIndexNum(txtIndexNum, SignUp.this);

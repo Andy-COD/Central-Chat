@@ -1,7 +1,5 @@
 package com.example.centralchat.news;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 public class NewsList {
     private String newsBody, newsDate, newsImage;
 

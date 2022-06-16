@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.centralchat.R;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.Viewholder> {
@@ -37,7 +36,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.Viewholder> {
         NewsList list2 = newsLists.get(position);
 
         if (!list2.getNewsImage().isEmpty()) {
-            Picasso.get().load(list2.getNewsImage()).resize(100, 100).centerCrop().into(holder.newsImage);
+            Picasso.Builder builder = new Picasso.Builder(context);
+            builder.listener((picasso, uri, exception) -> exception.printStackTrace());
+            builder.build().load(list2.getNewsImage()).into(holder.newsImage);
         }
         holder.newsContent.setText(list2.getNewsBody());
         holder.newsDate.setText(list2.getNewsDate());
@@ -50,8 +51,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.Viewholder> {
 
     static class Viewholder extends RecyclerView.ViewHolder {
 
-        private ImageView newsImage;
-        private TextView newsContent, newsDate;
+        private final ImageView newsImage;
+        private final TextView newsContent;
+        private final TextView newsDate;
 
         public Viewholder(@NonNull View itemView) {
             super(itemView);
