@@ -28,7 +28,19 @@
     <string name="news_date">date</string>
     <string name="search_icon">search_icon</string>
     <string name="user_status">Online</string>
-    <string name="enter_message_here">Enter message here...</string>
+    <string name="enter_message_here">Enter message here…</string>
     <string name="friend_placeholder">this is friends message</string>
-    <string name="timeStamp_placeholder">10-06-2022 4:54pm</string>
+    <string name="timeStamp_placeholder">10–06–2022 4:54pm</string>
+    <string name="faith_integrity_and_n_excellence">Faith Integrity and \n Excellence</string>
+    <string name="logo_description">Central logo</string>
+    <string name="logout">Logout</string>
+    <string name="edit">Edit</string>
+    <string name="phone">Phone</string>
+    <string name="your_username">Your username</string>
+    <string name="user_content_description">user icon</string>
+    <string name="update">Update</string>
+    <string name="profile_pic">Profile Picture</string>
+    <string name="image_file">image file</string>
+    <string name="unseenmessages">%1$s</string>
+    <string name="choose_file">Choose File</string>
 </resources>

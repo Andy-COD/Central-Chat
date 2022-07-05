@@ -57,9 +57,9 @@ public class NewsFragment extends Fragment {
                 newsLists.clear();
 
                 for(DataSnapshot dataSnapshot : snapshot.child("news").getChildren()) {
-                    final String getNewsBody = dataSnapshot.child("news body").getValue(String.class);
-                    final String getNewsImage = dataSnapshot.child("news image").getValue(String.class);
-                    final String getNewsDate = dataSnapshot.child("news date").getValue(String.class);
+                    final String getNewsBody = dataSnapshot.child("newsBody").getValue(String.class);
+                    final String getNewsImage = dataSnapshot.child("newsImage").getValue(String.class);
+                    final String getNewsDate = dataSnapshot.child("newsDate").getValue(String.class);
 
                     NewsList newsList = new NewsList(getNewsBody, getNewsDate, getNewsImage);
                     newsLists.add(newsList);

@@ -3,6 +3,7 @@ package com.example.centralchat.messages;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,20 +39,22 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull MessagesAdapter.ViewHolder holder, int position) {
+
         MessagesList list2 = messagesList.get(position);
 
-        if(!list2.getProfilePicture().isEmpty()) {
-            Picasso.get().load(list2.getProfilePicture()).resize(100, 100).centerCrop().into(holder.profilePicture);
+
+        if(list2.getProfilePicture().isEmpty()) {
+            Picasso.get().load(list2.getProfilePicture()).centerCrop().into(holder.profilePicture);
         }
         holder.userName.setText(list2.getUsername());
         holder.lastMessage.setText(list2.getLastMessage());
 
         if(list2.getUnseenMessages() == 0) {
             holder.unseenMessages.setVisibility(View.GONE);
-            holder.unseenMessages.setTextColor(Color.parseColor("#959595"));
+            holder.unseenMessages.setTextColor(context.getResources().getColor(R.color.blue_400));
         }else {
             holder.unseenMessages.setVisibility(View.VISIBLE);
-            holder.lastMessage.setTextColor(context.getResources().getColor(R.color.blue_400));
+            holder.lastMessage.setTextColor(context.getResources().getColor(R.color.blue_800));
             holder.unseenMessages.setText(list2.getUnseenMessages()+"");
         }
 

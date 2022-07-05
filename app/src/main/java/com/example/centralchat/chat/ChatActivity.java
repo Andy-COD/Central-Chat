@@ -6,11 +6,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.centralchat.MemoryData;
 import com.example.centralchat.R;
 import com.google.firebase.database.DataSnapshot;
@@ -56,13 +59,14 @@ public class ChatActivity extends AppCompatActivity {
         final String getProfilePic = getIntent().getStringExtra("profileImage");
         chatKey = getIntent().getStringExtra("chat_key");
 
+
         chatRecyclerView = findViewById(R.id.chatsRecyclerView);
 
         //Get account username from memory
         getUserName = MemoryData.getUserName(ChatActivity.this);
 
         userName.setText(getForiegnUsername);
-        Picasso.get().load(getProfilePic).into(profileImage);
+        Glide.with(ChatActivity.this).load(getProfilePic).placeholder(R.drawable.ic_profile).into(profileImage);
 
         chatRecyclerView.setHasFixedSize(true);
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(ChatActivity.this));
@@ -83,7 +87,7 @@ public class ChatActivity extends AppCompatActivity {
                         }
                     }
                     if (snapshot.hasChild("chat")) {
-                        if(snapshot.child("chat").child(chatKey).hasChild("msg")) {
+                        if(snapshot.child("chat").child(chatKey).hasChild("messages")) {
                             chatLists.clear();
                             for(DataSnapshot messagesSnapShot: snapshot.child("chat").child(chatKey).child("messages").getChildren()) {
 
@@ -97,9 +101,8 @@ public class ChatActivity extends AppCompatActivity {
                                     Date date = new Date(timestamp.getTime());
                                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                                     SimpleDateFormat simpleTimeFormat = new SimpleDateFormat("hh:mm aa", Locale.getDefault());
-                                    ChatList chatList = new ChatList(getUserName, getMsg, simpleDateFormat.format(date), simpleTimeFormat.format(date));
+                                    ChatList chatList = new ChatList(username, getMsg, simpleDateFormat.format(date), simpleTimeFormat.format(date));
                                     chatLists.add(chatList);
-
 
                                     if(loadingFirstTime || Long.parseLong(messagesTimeStamp) > Long.parseLong(MemoryData.getLastMsgTS(ChatActivity.this, chatKey))) {
                                         MemoryData.saveLastMsgTS(messagesTimeStamp, chatKey, ChatActivity.this);
@@ -127,16 +130,27 @@ public class ChatActivity extends AppCompatActivity {
 
             //Get current timeStamps
             final String currentTimeStamp = String.valueOf(System.currentTimeMillis()).substring(0, 10);
+
+            MemoryData.saveLastMsgTS(currentTimeStamp, chatKey, ChatActivity.this);
             dbReference.child("chat").child(chatKey).child("user_1").setValue(getForiegnUsername);
             dbReference.child("chat").child(chatKey).child("user_2").setValue(getUserName);
-            dbReference.child("chat").child(chatKey).child(currentTimeStamp).child("messages").child("msg").setValue(getTxtMessage);
-            dbReference.child("chat").child(chatKey).child(currentTimeStamp).child("user").setValue(getForiegnUsername);
+            dbReference.child("chat").child(chatKey).child("messages").child(currentTimeStamp).child("msg").setValue(getTxtMessage);
+            dbReference.child("chat").child(chatKey).child("messages").child(currentTimeStamp).child("user").setValue(getForiegnUsername);
 
             //clear text on submit button click
             messageInputTxt.setText("");
+            hideSoftKeyBoard();
         });
         backBtn.setOnClickListener(v -> {
             finish();
         });
+    }
+    //Function to close virtual keyboard
+    private void hideSoftKeyBoard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+
+        if(imm.isAcceptingText()) { // verify if the soft keyboard is open
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
     }
 }

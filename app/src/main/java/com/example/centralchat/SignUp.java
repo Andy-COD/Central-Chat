@@ -50,6 +50,7 @@ public class SignUp extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Login");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setOnClickListener(v -> finish());
 
         //initialize variables
         userName = findViewById(R.id.username);

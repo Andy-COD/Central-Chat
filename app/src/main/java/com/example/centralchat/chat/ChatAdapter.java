@@ -64,8 +64,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.Holder> {
 
     static class Holder extends RecyclerView.ViewHolder {
 
-        private LinearLayout friendsLayout, myLayout;
-        private TextView friendsMsg, myMsg, friendsTimeStamp, myTimeStamp;
+        private final LinearLayout friendsLayout;
+        private final LinearLayout myLayout;
+        private final TextView friendsMsg;
+        private final TextView myMsg;
+        private final TextView friendsTimeStamp;
+        private final TextView myTimeStamp;
         public Holder(@NonNull View itemView) {
             super(itemView);
 
