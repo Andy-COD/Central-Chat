@@ -21,7 +21,7 @@ public class HomePage extends AppCompatActivity {
         setContentView(R.layout.activity_home_page);
         
         Bundle bundle = new Bundle();
-        bundle.putString("index number", MemoryData.getIndexNum(HomePage.this));
+        bundle.putString("indexNum", MemoryData.getIndexNum(HomePage.this));
         bundle.putString("username", MemoryData.getUserName(HomePage.this));
 
 

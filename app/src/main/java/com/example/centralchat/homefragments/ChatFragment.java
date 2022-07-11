@@ -1,24 +1,23 @@
 package com.example.centralchat.homefragments;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
+import com.bumptech.glide.Glide;
 import com.example.centralchat.MemoryData;
 import com.example.centralchat.R;
 import com.example.centralchat.messages.MessagesAdapter;
 import com.example.centralchat.messages.MessagesList;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,59 +31,59 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatFragment extends Fragment {
-    private final List<MessagesList> messagesLists = new ArrayList<>();
-    String indexNum, userName;
-    RecyclerView messagesRecyclerView;
-    CircleImageView userProfile;
-    ProgressDialog progressDialog;
 
     DatabaseReference dbReference;
-    FirebaseAuth mAuth;
-    FirebaseUser fireBaseUser;
-
+    View view;
     private int unseenMessages = 0;
     private String lastMessage = "";
-    private String chatKey = "";
-
-    private boolean dataSet = false;
     private MessagesAdapter messagesAdapter;
-
-    View view;
+    private String chatKey = "";
+    private boolean dataSet = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_chat, container, false);
 
-        userProfile = view.findViewById(R.id.userProfilePicture);
-        if (getArguments() != null) {
-            indexNum = getArguments().getString("index number");
-            userName = getArguments().getString("username");
-        }
+        Context context = requireActivity().getApplicationContext();
 
-        dbReference = FirebaseDatabase.getInstance().getReferenceFromUrl("https://central-chat-5d62e-default-rtdb.firebaseio.com/");
-        mAuth = FirebaseAuth.getInstance();
-        fireBaseUser = mAuth.getCurrentUser();
+        RecyclerView messagesRecyclerView = view.findViewById(R.id.messagesRecyclerView);
+        final List<MessagesList> messagesLists = new ArrayList<>();
+        dbReference = FirebaseDatabase.getInstance()
+                .getReferenceFromUrl("https://central-chat-5d62e-default-rtdb.firebaseio.com/");
 
-        messagesRecyclerView = view.findViewById(R.id.messagesRecyclerView);
+        final CircleImageView profileImage = view.findViewById(R.id.userProfilePicture);
 
-        messagesRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity().getApplicationContext()));
+
+        //get bundle arguments from viewpager
+        assert getArguments() != null;
+        final String userName = getArguments().getString("username");
+        final String indexNum = getArguments().getString("indexNum");
+
+
         messagesRecyclerView.setHasFixedSize(true);
+        messagesRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        //set messages adapter to recycler view
-        messagesAdapter = new MessagesAdapter(messagesLists, getActivity());
-
+        messagesAdapter = new MessagesAdapter(messagesLists, getContext());
         messagesRecyclerView.setAdapter(messagesAdapter);
 
-        progressDialog = new ProgressDialog(getContext());
-        progressDialog.setMessage("Loading...");
+        ProgressDialog progressDialog = new ProgressDialog(getContext());
         progressDialog.setCancelable(false);
+        progressDialog.setMessage("Loading...");
         progressDialog.show();
 
-        //get profile picture from firebase database
-        dbReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+        dbReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                final String profilePic = snapshot.child("users")
+                        .child(indexNum).child("profile picture").getValue(String.class);
+                assert profilePic != null;
+                if(profilePic.isEmpty()) {
+                    Glide.with(getContext()).load(R.drawable.ic_profile)
+                            .placeholder(R.drawable.ic_profile).into(profileImage);
+                }else {
+                    Glide.with(getContext()).load(profilePic).into(profileImage);
+                }
                 progressDialog.dismiss();
             }
 
@@ -93,6 +92,7 @@ public class ChatFragment extends Fragment {
                 progressDialog.dismiss();
             }
         });
+
         dbReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -103,57 +103,61 @@ public class ChatFragment extends Fragment {
                 chatKey = "";
 
                 for(DataSnapshot dataSnapshot : snapshot.child("users").getChildren()) {
-                    final String userIndex = dataSnapshot.getKey();
 
+                    final String getIndexNum = dataSnapshot.getKey();
                     dataSet = false;
 
-                    if(!Objects.equals(userIndex, indexNum)) {
-                        final String getUserName = dataSnapshot.child("username").getValue(String.class);
-                        final String getProfilePicture = dataSnapshot.child("profile picture").getValue(String.class);
+                    assert getIndexNum != null;
+                    //As long as the received index is not the same as index stored in memory
+                    if(!getIndexNum.equals(indexNum)) {
+                        final String getUserName = dataSnapshot.child("username")
+                                .getValue(String.class);
+                        final String getProfilePic = dataSnapshot.child("profile picture")
+                                .getValue(String.class);
 
 
                         dbReference.child("chat").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                int getChatCount = (int)snapshot.getChildrenCount();
+                                int getChatCounts = (int)snapshot.getChildrenCount();
 
-                                if(getChatCount > 0) {
-                                    for (DataSnapshot dataSnapshot1: snapshot.getChildren()) {
+                                if(getChatCounts > 0) {
+                                    for(DataSnapshot dataSnapshot1 : snapshot.getChildren()) {
                                         final String getKey = dataSnapshot1.getKey();
                                         chatKey = getKey;
 
-
                                         if (dataSnapshot1.hasChild("user_1") && dataSnapshot1.hasChild("user_2") && dataSnapshot1.hasChild("messages")) {
-                                            final String getInitialUser = dataSnapshot1.child("user_1").getValue(String.class);
-                                            final String getSecondUser = dataSnapshot1.child("user_2").getValue(String.class);
+                                            final String getUserOne = dataSnapshot1.child("user_1").getValue(String.class);
+                                            final String getUserTwo = dataSnapshot1.child("user_2").getValue(String.class);
+                                            assert getUserTwo != null;
+                                            assert getUserOne != null;
 
+                                            if (getUserOne.equals(userName) && getUserTwo.equals(getUserName) || getUserTwo.equals(userName) && getUserOne.equals(getUserName)) {
+                                                for (DataSnapshot chatDataSnapshot: dataSnapshot1.child("messages").getChildren()) {
 
-                                            if(Objects.equals(getInitialUser, getUserName) && Objects.equals(getSecondUser, userName)
-                                                    || (Objects.equals(getInitialUser, userName) && Objects.equals(getSecondUser, getUserName))
-                                            ) {
-                                                for(DataSnapshot chatDataSnapShot: dataSnapshot1.child("messages").getChildren()) {
-                                                    final long getMessageKey = Long.parseLong(Objects.requireNonNull(chatDataSnapShot.getKey()));
-                                                    final long getLastSentMessage = Long.parseLong(MemoryData.getLastMsgTS(requireActivity(), getKey));
+                                                    final long getMessageKey = Long.parseLong(Objects.requireNonNull(chatDataSnapshot.getKey()));
+                                                    final long getLastSeenMessages = Long.parseLong(MemoryData.getLastMsgTS(context, getKey));
 
-                                                    Log.d("Message tag", String.valueOf(getLastSentMessage));
+                                                    Log.d("Message tag", String.valueOf(getMessageKey));
+                                                    Log.d("Message tag", String.valueOf(getLastSeenMessages));
 
-                                                    lastMessage = chatDataSnapShot.child("msg").getValue(String.class);
-                                                    if(getMessageKey > getLastSentMessage) {
+                                                    lastMessage = chatDataSnapshot.child("msg").getValue(String.class);
+                                                    if (getMessageKey > getLastSeenMessages) {
                                                         unseenMessages++;
                                                     }
                                                 }
                                             }
                                         }
-
                                     }
                                 }
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              if(!dataSet) {
+                                if (!dataSet) {
                                     dataSet = true;
-                                    MessagesList messagesList = new MessagesList(getUserName, lastMessage, getProfilePicture, unseenMessages, chatKey);
+                                    MessagesList messagesList = new MessagesList(getUserName, getIndexNum, lastMessage, getProfilePic, unseenMessages, chatKey);
                                     messagesLists.add(messagesList);
                                     messagesAdapter.updateData(messagesLists);
                                 }
                             }
+
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
 
@@ -161,7 +165,6 @@ public class ChatFragment extends Fragment {
                         });
                     }
                 }
-
             }
 
             @Override

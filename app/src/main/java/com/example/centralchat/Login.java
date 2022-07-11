@@ -35,7 +35,7 @@ public class Login extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle("Login");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setOnClickListener(v -> finish());
+        toolbar.setOnClickListener(v -> onBackPressed());
 
         indexNum = findViewById(R.id.index_num);
         password = findViewById(R.id.password);
@@ -47,12 +47,12 @@ public class Login extends AppCompatActivity {
             String txtIndex = indexNum.getText().toString();
             String txtPassword = password.getText().toString();
 
-            Log.d("Message tag", txtIndex);
+
 
             if(TextUtils.isEmpty(txtIndex) || TextUtils.isEmpty(txtPassword)) {
                 Toast.makeText(Login.this, "Please enter your index number / password", Toast.LENGTH_SHORT).show();
             }else{
-                dbReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                dbReference.child("users").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         //check if index number exist
@@ -60,7 +60,10 @@ public class Login extends AppCompatActivity {
                             String getPassword = snapshot.child(txtIndex).child("password").getValue(String.class);
                             if(Objects.equals(getPassword, txtPassword)) {
                                 Toast.makeText(Login.this, "Successfully logged in", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(getApplicationContext(), HomePage.class));
+                                Intent intent = new Intent(Login.this, HomePage.class);
+                                intent.putExtra("index number", txtIndex);
+                                startActivity(intent);
+
                                 finish();
                             }else {
                                 Toast.makeText(Login.this, "Wrong password", Toast.LENGTH_SHORT).show();

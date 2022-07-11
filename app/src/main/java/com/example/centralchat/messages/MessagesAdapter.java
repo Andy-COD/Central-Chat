@@ -13,82 +13,83 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.centralchat.R;
-import com.example.centralchat.chat.ChatActivity;
-import com.squareup.picasso.Picasso;
+import com.example.centralchat.chat.Chat;
 
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder> {
+public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.MyViewHolder> {
 
-    private List<MessagesList> messagesList;
+    private List<MessagesList> messagesLists;
     private final Context context;
 
-    public MessagesAdapter(List<MessagesList> messagesList, Context context) {
-        this.messagesList = messagesList;
+    public MessagesAdapter(List<MessagesList> messagesLists, Context context) {
+        this.messagesLists = messagesLists;
         this.context = context;
     }
 
     @NonNull
     @Override
-    public MessagesAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.messages_adapter_layout, null));
+    public MessagesAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new MyViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.messages_adapter_layout, null));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MessagesAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MessagesAdapter.MyViewHolder holder, int position) {
+        MessagesList list2 = messagesLists.get(position);
 
-        MessagesList list2 = messagesList.get(position);
-
-
-        if(list2.getProfilePicture().isEmpty()) {
-            Picasso.get().load(list2.getProfilePicture()).centerCrop().into(holder.profilePicture);
+        if (!list2.getProfilePic().isEmpty()) {
+            Glide.with(context).load(list2.getProfilePic()).into(holder.profilePic);
         }
         holder.userName.setText(list2.getUsername());
         holder.lastMessage.setText(list2.getLastMessage());
 
         if(list2.getUnseenMessages() == 0) {
             holder.unseenMessages.setVisibility(View.GONE);
-            holder.unseenMessages.setTextColor(context.getResources().getColor(R.color.blue_400));
+            holder.lastMessage.setTextColor(Color.parseColor("#959595"));
         }else {
             holder.unseenMessages.setVisibility(View.VISIBLE);
-            holder.lastMessage.setTextColor(context.getResources().getColor(R.color.blue_800));
-            holder.unseenMessages.setText(list2.getUnseenMessages()+"");
+            holder.lastMessage.setText(context.getString(R.string.unseenmessages, list2.getLastMessage()));
+            holder.lastMessage.setTextColor(context.getResources().getColor(R.color.blue_400));
+
         }
 
         holder.rootLayout.setOnClickListener(v -> {
-            Intent intent = new Intent(context, ChatActivity.class);
-            intent.putExtra("username", list2.getUsername());
-            intent.putExtra("profileImage", list2.getProfilePicture());
+            Intent intent = new Intent(context, Chat.class);
+            intent.putExtra("name", list2.getUsername());
+            intent.putExtra("profile_pic", list2.getProfilePic());
             intent.putExtra("chat_key", list2.getChatKey());
+            intent.putExtra("indexNum", list2.getIndexNum());
             context.startActivity(intent);
         });
     }
 
-    public void updateData(List<MessagesList> messagesList) {
-        this.messagesList = messagesList;
+    public void updateData(List<MessagesList> messagesLists) {
+        this.messagesLists = messagesLists;
         notifyDataSetChanged();
+
     }
 
     @Override
     public int getItemCount() {
-        return messagesList.size();
+        return messagesLists.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        private final CircleImageView profilePicture;
+        private final CircleImageView profilePic;
         private final TextView userName;
         private final TextView lastMessage;
         private final TextView unseenMessages;
         private final LinearLayout rootLayout;
 
-        public ViewHolder(@NonNull View itemView) {
+        public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            profilePicture = itemView.findViewById(R.id.profile_picture);
+            profilePic = itemView.findViewById(R.id.profile_picture);
             userName = itemView.findViewById(R.id.userName);
             lastMessage = itemView.findViewById(R.id.last_message);
             unseenMessages = itemView.findViewById(R.id.unseen_messages);

@@ -43,4 +43,6 @@
     <string name="image_file">image file</string>
     <string name="unseenmessages">%1$s</string>
     <string name="choose_file">Choose File</string>
+    <string name="back_button">back button</string>
+    <string name="send_button">send button</string>
 </resources>

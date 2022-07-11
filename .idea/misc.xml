@@ -3,6 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Andy/Desktop/app revision/app/src/main/res/layout/activity_authentication.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Andy/Desktop/app revision/app/src/main/res/layout/activity_chat.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Andy/Desktop/app revision/app/src/main/res/layout/activity_chat2.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Andy/Desktop/app revision/app/src/main/res/layout/activity_initial.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Andy/Desktop/app revision/app/src/main/res/layout/activity_sign_up.xml" value="0.1" />
+        <entry key="..\:/Users/Andy/Desktop/app revision/app/src/main/res/layout/fragment_chat.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Andy/Desktop/app revision/app/src/main/res/layout/messages_adapter_layout.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/Andy/StudioProjects/Central-Chat/app/src/main/res/drawable/back_button.xml" value="0.2115" />
         <entry key="..\:/Users/Andy/StudioProjects/Central-Chat/app/src/main/res/drawable/email_icon.xml" value="0.2115" />
         <entry key="..\:/Users/Andy/StudioProjects/Central-Chat/app/src/main/res/drawable/ic_profile.xml" value="0.2115" />

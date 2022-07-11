@@ -19,10 +19,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.example.centralchat.Login;
 import com.example.centralchat.MemoryData;
 import com.example.centralchat.R;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,13 +31,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StorageTask;
-import com.google.firebase.storage.UploadTask;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -69,7 +68,9 @@ public class ProfileFragment extends Fragment {
         email = view.findViewById(R.id.email);
         phoneNum = view.findViewById(R.id.phoneNum);
         profilePic = view.findViewById(R.id.profile_picture);
-        storageReference = FirebaseStorage.getInstance().getReferenceFromUrl("gs://central-chat-5d62e.appspot.com/images");
+        final String randomKey = UUID.randomUUID().toString();
+        storageReference = FirebaseStorage.getInstance().getReferenceFromUrl("gs://central-chat-5d62e.appspot.com")
+                .child("images/" + randomKey);
 
         launcher = registerForActivityResult(new ActivityResultContracts.GetContent()
                 , result ->{
@@ -77,7 +78,7 @@ public class ProfileFragment extends Fragment {
             profilePic.setImageURI(imageUri);
 
             storageReference.putFile(imageUri).addOnSuccessListener(taskSnapshot -> storageReference.getDownloadUrl()
-                    .addOnSuccessListener(uri -> dbReference.child("users").child(indexNum).child("profile picture").setValue(uri.toString())
+                    .addOnSuccessListener(uri -> dbReference.child("users").child(indexNum).child("profile picture").setValue(uri.toString() + indexNum)
                             .addOnSuccessListener(unused -> Toast.makeText(requireActivity(), "Image successfully uploaded", Toast.LENGTH_SHORT)
                                     .show())));
         });
@@ -92,6 +93,9 @@ public class ProfileFragment extends Fragment {
                 username.setText(snapshot.child(indexNum).child("username").getValue(String.class));
                 email.setText(snapshot.child(indexNum).child("email").getValue(String.class));
                 phoneNum.setText(snapshot.child(indexNum).child("phone number").getValue(String.class));
+                String profileImage = snapshot.child(indexNum).child("profile picture")
+                                .getValue(String.class);
+                Glide.with(getContext()).load(profileImage).into(profilePic);
             }
 
             @Override
@@ -107,7 +111,7 @@ public class ProfileFragment extends Fragment {
             mAuth.signOut();
 
             Intent intent = new Intent(getActivity(), Login.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             requireActivity().finish();
         });
@@ -115,7 +119,7 @@ public class ProfileFragment extends Fragment {
         edit.setOnClickListener(v -> {
             final DialogPlus dialogPlus = DialogPlus.newDialog(requireActivity())
                     .setContentHolder(new ViewHolder(R.layout.update_popup))
-                    .setExpanded(true, 1200)
+                    .setExpanded(true, 1500)
                     .create();
 
             View view1 = dialogPlus.getHolderView();
