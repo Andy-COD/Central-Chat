@@ -138,9 +138,6 @@ public class ChatFragment extends Fragment {
                                                     final long getMessageKey = Long.parseLong(Objects.requireNonNull(chatDataSnapshot.getKey()));
                                                     final long getLastSeenMessages = Long.parseLong(MemoryData.getLastMsgTS(context, getKey));
 
-                                                    Log.d("Message tag", String.valueOf(getMessageKey));
-                                                    Log.d("Message tag", String.valueOf(getLastSeenMessages));
-
                                                     lastMessage = chatDataSnapshot.child("msg").getValue(String.class);
                                                     if (getMessageKey > getLastSeenMessages) {
                                                         unseenMessages++;

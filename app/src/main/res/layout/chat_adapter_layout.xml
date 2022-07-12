@@ -6,69 +6,67 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp">
+        android:layout_marginTop="10dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="100dp"
-            android:layout_marginStart="20dp"
             android:id="@+id/friendLayout"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginEnd="50dp"
+            android:layout_marginStart="20dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/friend_placeholder"
+                android:textColor="#424242"
                 android:background="@drawable/opo_msg_back"
                 android:paddingVertical="20dp"
-                android:paddingHorizontal="15dp"
-                android:textColor="#424242"
-                android:textSize="18sp"
-                android:text="@string/friend_placeholder"
+                android:padding="20dp"
+                android:textSize="20sp"
                 android:id="@+id/friendMessage"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/timeStamp_placeholder"
-                android:textSize="12sp"
+                android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="5dp"
-                android:id="@+id/friendMessageTime"/>
-
+                android:text="@string/timeStamp_placeholder"
+                android:textSize="14sp"
+                android:id="@+id/friendMsgTime"/>
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="100dp"
-            android:layout_marginEnd="20dp"
             android:id="@+id/myLayout"
             android:orientation="vertical"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/friendLayout"
-            android:layout_marginTop="25dp">
+            android:layout_alignParentEnd="true">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="50dp"
+                android:layout_marginEnd="20dp"
+                android:text="@string/my_message_placeholder"
+                android:textColor="#424242"
                 android:background="@drawable/my_msg_back"
                 android:paddingVertical="20dp"
-                android:paddingHorizontal="15dp"
-                android:textColor="#424242"
-                android:textSize="18sp"
-                android:text="@string/friend_placeholder"
+                android:paddingHorizontal="20dp"
+                android:textSize="20sp"
                 android:id="@+id/myMessage"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/timeStamp_placeholder"
-                android:textSize="12sp"
+                android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="5dp"
-                android:id="@+id/myMessageTime"
+                android:text="@string/timeStamp_placeholder"
+                android:textSize="14sp"
+                android:id="@+id/myMsgTime"
                 android:layout_gravity="end"/>
-
 
         </LinearLayout>
 
